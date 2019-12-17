@@ -32,7 +32,9 @@
         @endforeach
     </ul>
 
+    
 
+    {{$posts->links()}}
 
     
 @endsection

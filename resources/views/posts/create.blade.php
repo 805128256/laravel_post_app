@@ -10,7 +10,7 @@
 
         <input type='hidden' name='poster'
             value="{{Auth::user()->name}}">
-        <p>Content: <input type='text' name='content'
+        <p>Your comment: <input type='text' name='content'
             value="{{old('content')}}"></p>
 
         <input type='submit' value='Submit'>
