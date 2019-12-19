@@ -5,42 +5,41 @@
 
 @section('content')
 
-    <ul>
-        <h3>{{$post->poster}} :</h3>
-        <a>{{$post->content}}</a>
-        <p style="color:crimson" >views: {{$post->view_times}}</p>
-        <h3>Comments :</h3>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
-        @if (Auth::user()->name == $post->poster)
+    <ul id="root">
+        
+        <h3 v-show="post">@{{post.poster}} :</h3>
+        <a v-show="post">@{{post.content}}</a>
+        <p style="color:crimson" v-show="post">views: @{{post.view_times}}</p>
 
-            @foreach ($post->comments as $comment)
-            <h4>{{$comment->name}} :</h4>  
-            <a>{{$comment->comment}}</a>
+        @if (Auth::user() != null && Auth::user()->name == $post->poster)
             <form method="POST"
-            action="{{route('comments.destroy', ['id' => $comment->id]) }}">
-            @csrf
-            @method('DELETE')
-            <button type="submit">DELETE </button>
-             </form>
-            @endforeach 
-                
+                action="{{route('posts.update', ['id' => $post->id]) }}">
+                @csrf
+                @method('PUT')
+                <input type='text' name='content'>
+                <button type="submit">update</button>
+            </form>
         @endif 
 
-        @if (Auth::user()->name != $post->poster)
+        <h3>Comments :</h3>
 
-            @foreach ($post->comments as $comment)
-            <h4>{{$comment->name}} :</h4>  
-            <a>{{$comment->comment}}</a>
-            @endforeach 
-                
-        @endif
+        <div v-for="com in comments" :key="com.id">
+            <h4>@{{com.name}} :</h4>  
+            <a>@{{com.comment}}</a>
 
+                <form method="POST"
+                    action="{{route('comments.update', ['id' => $post->id]) }}">
+                    @csrf
+                    @method('PUT')
+                    <input type='hidden' name='id' :value= "com.id">
+                    <input type='text' name='comment'>
+                    <button type="submit">edit</button>
+                </form>
+        </div>
          
-
-        <h4>
-            @if('[]' == $post->comments) No comments
-            @endif
-        </h4>  
 
         <p>__________________________________________________</p>
 
@@ -48,19 +47,59 @@
             <p><b>{{session('message')}}</b></p>
         @endif
 
-        <form method='POST' action="{{ route('comments.store')}}">
-                @csrf
 
-            <input type='hidden' name='name' value="{{Auth::user()->name}}">
-            <p>Content: <input type='text' name='comment'
-                value="{{old('comment')}}"></p>
-            <p><input type='hidden' name='post_id'
-                value="{{$post->id}}"></p>
+        <h4>Your comment: </h4>
 
-            <input type='submit' value='Submit'>
-        </form>
+        
+            <input type='text' v-model="newComment">
+            <button @click="createComment('{{Auth::user()->name}}')">submit</button> 
+
+            <!--
+            <input type='text' v-model="newCommentName">
+            <input type='text' v-model="newComment">
+            <button @click="createComment()">submit</button>
+            -->
+            
 
     </ul>
+
+    <script>
+        var app = new Vue({
+            el: "#root",
+            data: {
+                post:'',
+                comments: [],
+                newComment: '',
+                newContent: '',
+            },
+            mounted() {
+                axios.get("{{ route ('api.posts.show',['id' => $post->id])}}")
+                .then(response => {
+                    this.comments = response.data.comments;
+                    this.post = response.data.post;
+                })
+                .catch(response => {
+                    console.log(response);
+                })
+            },
+            methods: {
+                createComment: function (newCommentName){
+                    axios.post("{{ route ('api.comment.store')}}", {
+                        "name" : newCommentName,
+                        "comment": this.newComment,
+                        "post_id": this.post.id
+                    })
+                    .then(response => {
+                        this.comments.push(response.data);
+                        this.newComment = '';
+                    })
+                    .catch(response => {
+                        console.log(response);
+                    })
+                },
+            }
+        })
+    </script>
 
     
   
