@@ -23,7 +23,7 @@ Route::get('/posts','PostController@index')->name('posts.index');
 
 Route::post('/admin/{id}','PostController@admin')->name('admin');
 
-Route::get('/posts/create','PostController@create')->name('posts.create');
+Route::get('/posts/create','PostController@create')->name('posts.create')->middleware('auth');
 
 Route::post('/posts','PostController@store')->name('posts.store');
 

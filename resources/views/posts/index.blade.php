@@ -25,6 +25,16 @@
             <p style="color:crimson">create time: {{$post->time}}</p>
             <a style="color:crimson">views: {{$post->view_times}}   |   </a>
             <a>posted by: {{$post->poster}}</a>
+            @if ($post->feeling != null)
+            <a>   |   Feeling is: {{$post->feeling->feeling}}</a>
+            @endif 
+
+            <p>
+                <a>Tags:  </a>
+                @foreach($post->tags as $tag)
+                <button type="button"> {{$tag->tag}} </button>
+                @endforeach
+            </p>
 
             @if (Auth::user() != null && Auth::user()->can('delete',$post))
                 <form method="POST"

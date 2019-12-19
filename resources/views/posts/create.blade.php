@@ -10,8 +10,18 @@
 
         <input type='hidden' name='poster'
             value="{{Auth::user()->name}}">
-        <p>Your comment: <input type='text' name='content'
+        <p>Your post: <input type='text' name='content'
             value="{{old('content')}}"></p>
+        <p>Your feeling: <input type='text' name='feeling'
+            value="{{old('feeling')}}"></p>
+        @foreach ($tags as $tag)
+            <p>
+            <input type="hidden" name="{{$tag->id}}" value="0">
+            <input type="checkbox" name="{{$tag->id}}" value="{{$tag->tag}}">
+            <a>{{$tag->tag}}</a>
+            </p>
+        @endforeach
+        
 
         <input type='submit' value='Submit'>
         <a href="{{ route('posts.index')}}">Cancel</a>

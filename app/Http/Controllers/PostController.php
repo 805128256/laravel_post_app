@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Post;
+use App\Tag;
+use App\Feeling;
 use App\Events\PostView;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,7 +29,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        $tags = Tag::all();
+        return view('posts.create',['tags' => $tags]);
     }
 
     /**
@@ -49,6 +52,21 @@ class PostController extends Controller
         $a->time = date('Y-m-d H:i:s');
         $a->view_times = 0;
         $a->save();
+
+        if($request->feeling != null){
+            $feeling = new Feeling;
+            $feeling->feeling = $request->feeling;
+            $feeling->post_id = $a->id;
+            $feeling->save();
+        }
+
+        $tags = Tag::all();
+        foreach($tags as $tag) {
+            if($request->get($tag->id,0)==$tag->tag) {
+                $tag->posts()->attach($a->id);
+            }
+        }
+
 
         session()->flash('message','Post was created.');
         return redirect()->route('posts.index');

@@ -10,4 +10,14 @@ class post extends Model
     {
         return $this->hasMany('App\Comment');
     }
+
+    public function feeling()
+    {
+        return $this->hasOne('App\Feeling');
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany('App\Tag');
+    }
 }

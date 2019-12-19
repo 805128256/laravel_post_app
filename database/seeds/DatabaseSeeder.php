@@ -13,5 +13,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(PostTableSeeder::class);
         $this->call(CommentTableSeeder::class);
+        $this->call(FeelingTableSeeder::class);
+        $this->call(TagTableSeeder::class);
     }
 }
