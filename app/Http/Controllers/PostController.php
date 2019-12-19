@@ -20,6 +20,10 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::orderBy('time','desc')->paginate(10);
+        $api = resolve('GuzzleHttp\Client');
+
+        //dd($api);
+
         return view('posts.index',['posts' => $posts]);
     }
 
