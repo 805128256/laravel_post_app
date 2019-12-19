@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Post;
 use App\Tag;
 use App\Feeling;
+use App\Image;
 use App\Events\PostView;
 use Illuminate\Support\Facades\Auth;
 
@@ -46,12 +47,38 @@ class PostController extends Controller
             'content' => 'required|max:300'
         ]);
 
+        // $num = count($request->images);
+        // foreach(range(0, $num) as $index) {
+        //     $validated = $request->validate([
+        //         'images[$index]' => 'image|size: 1000000'
+        //     ]);
+        // }
+
+
         $a = new Post;
         $a->poster = $validatedData['poster'];
         $a->content = $validatedData['content'];
         $a->time = date('Y-m-d H:i:s');
         $a->view_times = 0;
         $a->save();
+
+        // foreach($request->images as $im){
+        //     $image = new Image;
+        //     $filename = $im->store('/public/images');
+        //     $image->post_id = $a->id;
+        //     $image->filename = $filename;
+        //     $image->save();
+        // }
+
+        foreach($request->images as $im){
+            $image = new Image;
+            $filename = $im->store('/public/images');
+            $filename = explode('public', $filename);
+            $filename = '/storage'.$filename[1];
+            $image->post_id = $a->id;
+            $image->filename = $filename;
+            $image->save();
+        }
 
         if($request->feeling != null){
             $feeling = new Feeling;

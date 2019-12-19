@@ -20,4 +20,9 @@ class post extends Model
     {
         return $this->belongsToMany('App\Tag');
     }
+
+    public function images()
+    {
+        return $this->hasMany('App\Image');
+    }
 }

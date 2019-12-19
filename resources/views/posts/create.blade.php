@@ -5,13 +5,17 @@
 
 @section('content')
 
-    <form method='POST' action="{{ route('posts.store')}}">
+    <form method='POST' action="{{ route('posts.store')}}" enctype="multipart/form-data">
         @csrf
 
         <input type='hidden' name='poster'
             value="{{Auth::user()->name}}">
         <p>Your post: <input type='text' name='content'
             value="{{old('content')}}"></p>
+
+        <a>Upload images for your post:</a>
+        <input type="file" name="images[]" multiple="multiple">
+
         <p>Your feeling: <input type='text' name='feeling'
             value="{{old('feeling')}}"></p>
         @foreach ($tags as $tag)

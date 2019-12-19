@@ -11,7 +11,11 @@
     <ul id="root">
         
         <h3 v-show="post">@{{post.poster}} :</h3>
-        <a v-show="post">@{{post.content}}</a>
+        <p v-show="post">@{{post.content}}</p>
+        @foreach($post->images as $image)
+            <img src="{{asset($image->filename)}}" height="50px" width="50px">
+        @endforeach
+        
         <p style="color:crimson" v-show="post">views: @{{post.view_times}}</p>
 
         @if (Auth::user() != null && Auth::user()->name == $post->poster)
